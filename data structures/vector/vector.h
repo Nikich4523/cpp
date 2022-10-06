@@ -23,6 +23,18 @@ namespace kns
             capacity_ = capacity;
         }
 
+        // operators
+        T &operator[](int ind)
+        {
+            return data_[ind];
+        }
+
+        const T &operator[](int ind) const
+        {
+            return data_[ind];
+        }
+
+        // operations
         void push_back(T element)
         {
             if (size_ == capacity_)
@@ -43,19 +55,11 @@ namespace kns
             ++size_;
         }
 
-        // operators
-        T &operator[](int ind)
+        void pop_back()
         {
-            return data_[ind];
+            --size_;
+            data_[size_].~T();
         }
-
-        const T &operator[](int ind) const
-        {
-            return data_[ind];
-        }
-
-        // operations
-        void pop_back();
 
         void resize();
         void reserve();
