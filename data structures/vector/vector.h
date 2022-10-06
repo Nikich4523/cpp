@@ -58,7 +58,6 @@ namespace kns
         void pop_back()
         {
             --size_;
-            data_[size_].~T();
         }
 
         void resize();
