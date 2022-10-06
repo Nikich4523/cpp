@@ -28,8 +28,8 @@ namespace kns
         void push_back(T element);
         void pop_back();
 
-        size_t max_size() const;
-        void clear();
+        size_t max_size() const noexcept;
+        void clear() const noexcept;
         void reserve(size_t new_capacity);
         void reset();
         void shrink_to_fit();
@@ -112,13 +112,13 @@ void kns::vector<T>::pop_back()
 }
 
 template <typename T>
-size_t kns::vector<T>::max_size() const
+size_t kns::vector<T>::max_size() const noexcept
 {
     return (pow(2, (sizeof(nullptr) * 8))) / sizeof(T) - 1;
 }
 
 template <typename T>
-void kns::vector<T>::clear()
+void kns::vector<T>::clear() const noexcept
 {
     size_ = 0;
 }
