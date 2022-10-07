@@ -29,7 +29,7 @@ namespace kns
         void pop_back() noexcept;
 
         size_t max_size() const noexcept;
-        void clear() const noexcept;
+        void clear() noexcept;
         void reserve(size_t new_capacity);
         void reset();
         void resize();
@@ -123,7 +123,7 @@ size_t kns::vector<T>::max_size() const noexcept
 }
 
 template <typename T>
-void kns::vector<T>::clear() const noexcept
+void kns::vector<T>::clear() noexcept
 {
     size_ = 0;
 }
