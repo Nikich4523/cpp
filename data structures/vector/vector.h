@@ -99,7 +99,7 @@ void kns::vector<T>::push_back(T element)
 {
     if (size_ == capacity_)
     {
-        size_t new_capacity = capacity_ + capacity_ * expansion_coefficient_;
+        size_t new_capacity = capacity_ * expansion_coefficient_ + capacity_ + 1;
 
         T *new_data = operator new[](sizeof(T) * new_capacity);
         data_ = copy_(data_, new_data, size_);
