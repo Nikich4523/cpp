@@ -162,4 +162,18 @@ bool kns::vector<T>::empty() const noexcept
     return !size_;
 }
 
+template <typename T>
+T kns::vector<T>::front() const
+{
+    if (size > 0)
+        return data_[0];
+}
+
+template <typename T>
+T kns::vector<T>::back() const
+{
+    if (size > 0)
+        return data_[size_ - 1];
+}
+
 #endif
