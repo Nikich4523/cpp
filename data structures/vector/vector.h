@@ -5,7 +5,6 @@
 #include <cstddef>
 #include <stdexcept>
 
-// sizeof(T) вынести в отдельную приватную переменную? или не надо?
 // smart pointer
 // operator new[] vs new[] & operator delete[] vs delete[]
 
@@ -15,10 +14,10 @@ namespace kns
     class vector
     {
     public:
-        // constructors
+        // constructors & destructors
         vector();
-
         vector(size_t capacity);
+        ~vector();
 
         // operators
         T &operator[](unsigned int ind);
@@ -31,10 +30,8 @@ namespace kns
         size_t max_size() const noexcept;
         void clear() noexcept;
         void reserve(size_t new_capacity);
-        void reset();
-        void resize();
         void shrink_to_fit();
-        void swap(); // friend
+        void swap(vector<T> &vec);
 
         // getters
         size_t size() const noexcept;
@@ -42,8 +39,6 @@ namespace kns
         bool empty() const noexcept;
         T front() const noexcept;
         T back() const noexcept;
-
-        ~vector();
 
     private:
         T *data_;
@@ -153,6 +148,22 @@ void kns::vector<T>::shrink_to_fit()
     copy_(data_, new_data, size_);
     data_ = new_data;
     capacity_ = size_;
+}
+
+template <typename T>
+void kns::vector<T>::swap(vector<T> &vec)
+{
+    T *temp_ptr = data_;
+    data_ = vec.data_;
+    vec.data_ = temp_ptr;
+
+    auto temp_size = size_;
+    size_ = vec.size_;
+    vec.size_ = temp_size;
+
+    auto temp_capacity = capacity_;
+    capacity_ = vec.capacity_;
+    vec.capacity_ = temp_capacity;
 }
 
 // GETTERS /////
