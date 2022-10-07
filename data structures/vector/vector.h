@@ -95,6 +95,7 @@ void kns::vector<T>::push_back(T element)
 
         T *new_data = new T[new_capacity];
         copy_(data_, new_data, size_);
+        delete[] data_;
         data_ = new_data;
         capacity_ = new_capacity;
     }
@@ -131,6 +132,7 @@ void kns::vector<T>::reserve(size_t new_capacity)
 
     T *new_data = new T[new_capacity];
     copy_(data_, new_data, size_);
+    delete[] data_;
     data_ = new_data;
     capacity_ = new_capacity;
 }
@@ -143,6 +145,7 @@ void kns::vector<T>::shrink_to_fit()
 
     T *new_data = new T[size_];
     copy_(data_, new_data, size_);
+    delete[] data_;
     data_ = new_data;
     capacity_ = size_;
 }
@@ -204,8 +207,6 @@ void kns::vector<T>::copy_(T *src, T *dst, size_t src_size)
     {
         dst[i] = src[i];
     }
-    delete[] src;
-    return dst;
 }
 
 #endif
