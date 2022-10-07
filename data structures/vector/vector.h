@@ -178,12 +178,11 @@ T kns::vector<T>::back() const noexcept
 template <typename T>
 T *kns::vector<T>::copy_(T *src, T *dst, size_t src_size)
 {
-    delete[] src;
     for (auto i = 0; i < src_size; ++i)
     {
         dst[i] = src[i];
     }
-
+    delete[] src;
     return dst;
 }
 
