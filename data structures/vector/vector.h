@@ -5,9 +5,6 @@
 #include <cstddef>
 #include <stdexcept>
 
-// smart pointer
-// operator new[] vs new[] & operator delete[] vs delete[]
-
 namespace kns
 {
     template <typename T>
@@ -58,7 +55,7 @@ kns::vector<T>::vector() : vector(1) {}
 template <typename T>
 kns::vector<T>::vector(size_t capacity)
 {
-    data_ = operator new[](sizeof(T) * capacity);
+    data_ = new T[capacity];
     size_ = 0;
     capacity_ = capacity;
 }
@@ -96,7 +93,7 @@ void kns::vector<T>::push_back(T element)
     {
         size_t new_capacity = capacity_ * expansion_coefficient_ + capacity_ + 1;
 
-        T *new_data = operator new[](sizeof(T) * new_capacity);
+        T *new_data = new T[new_capacity];
         copy_(data_, new_data, size_);
         data_ = new_data;
         capacity_ = new_capacity;
@@ -132,7 +129,7 @@ void kns::vector<T>::reserve(size_t new_capacity)
     if (new_capacity <= capacity_)
         return;
 
-    T *new_data = operator new[](sizeof(T) * new_capacity);
+    T *new_data = new T[new_capacity];
     copy_(data_, new_data, size_);
     data_ = new_data;
     capacity_ = new_capacity;
@@ -144,7 +141,7 @@ void kns::vector<T>::shrink_to_fit()
     if (size_ == 0 || size_ == capacity_)
         return;
 
-    T *new_data = operator new[](sizeof(T) * size_);
+    T *new_data = new T[size_];
     copy_(data_, new_data, size_);
     data_ = new_data;
     capacity_ = size_;
