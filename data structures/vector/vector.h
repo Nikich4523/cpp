@@ -52,7 +52,7 @@ namespace kns
         float expansion_coefficient_ = 1.2;
 
     private:
-        T *copy_(T *src, T *dst, size_t src_size);
+        void copy_(T *src, T *dst, size_t src_size);
     };
 }
 
@@ -102,7 +102,8 @@ void kns::vector<T>::push_back(T element)
         size_t new_capacity = capacity_ * expansion_coefficient_ + capacity_ + 1;
 
         T *new_data = operator new[](sizeof(T) * new_capacity);
-        data_ = copy_(data_, new_data, size_);
+        copy_(data_, new_data, size_);
+        data_ = new_data;
         capacity_ = new_capacity;
     }
 
@@ -137,8 +138,21 @@ void kns::vector<T>::reserve(size_t new_capacity)
         return;
 
     T *new_data = operator new[](sizeof(T) * new_capacity);
-    data_ = copy_(data_, new_data, size_);
+    copy_(data_, new_data, size_);
+    data_ = new_data;
     capacity_ = new_capacity;
+}
+
+template <typename T>
+void kns::vector<T>::shrink_to_fit()
+{
+    if (size_ == 0 || size_ == capacity_)
+        return;
+
+    T *new_data = operator new[](sizeof(T) * size_);
+    copy_(data_, new_data, size_);
+    data_ = new_data;
+    capacity_ = size_;
 }
 
 // GETTERS /////
@@ -176,7 +190,7 @@ T kns::vector<T>::back() const noexcept
 
 // PRIVATE /////
 template <typename T>
-T *kns::vector<T>::copy_(T *src, T *dst, size_t src_size)
+void kns::vector<T>::copy_(T *src, T *dst, size_t src_size)
 {
     for (auto i = 0; i < src_size; ++i)
     {
