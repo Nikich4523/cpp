@@ -1,6 +1,9 @@
 #ifndef KNS_VECTOR_H
 #define KNS_VECTOR_H
 
+// clear и pop_back - нужно ли вызвать деструкторы принудительно?
+// операторы присваивания (copy/move)
+
 #include <cmath>
 #include <cstddef>
 #include <stdexcept>
@@ -45,6 +48,7 @@ namespace kns
         float expansion_coefficient_ = 1.2;
 
     private:
+        void reallocate_data_(size_t new_capacity);
         void copy_(std::unique_ptr<T[]> &src, std::unique_ptr<T[]> &dst, size_t src_size);
     };
 }
@@ -84,11 +88,7 @@ void kns::vector<T>::push_back(T element)
 {
     if (size_ == capacity_)
     {
-        size_t new_capacity = capacity_ * expansion_coefficient_ + capacity_ + 1;
-        std::unique_ptr<T[]> new_data(new T[new_capacity]);
-        copy_(data_, new_data, size_);
-        std::swap(data_, new_data);
-        capacity_ = new_capacity;
+        reallocate_data_(capacity_ * expansion_coefficient_ + capacity_ + 1);
     }
 
     data_[size_] = element;
@@ -121,10 +121,7 @@ void kns::vector<T>::reserve(size_t new_capacity)
     if (new_capacity <= capacity_)
         return;
 
-    std::unique_ptr<T[]> new_data(new T[new_capacity]);
-    copy_(data_, new_data, size_);
-    std::swap(data_, new_data);
-    capacity_ = new_capacity;
+    reallocate_data_(new_capacity);
 }
 
 template <typename T>
@@ -133,10 +130,7 @@ void kns::vector<T>::shrink_to_fit()
     if (size_ == 0 || size_ == capacity_)
         return;
 
-    std::unique_ptr<T[]> new_data(new T[size_]);
-    copy_(data_, new_data, size_);
-    std::swap(data_, new_data);
-    capacity_ = size_;
+    reallocate_data_(size_);
 }
 
 template <typename T>
@@ -181,6 +175,15 @@ T kns::vector<T>::back() const noexcept
 }
 
 // PRIVATE /////
+template <typename T>
+void kns::vector<T>::reallocate_data_(size_t new_capacity)
+{
+    std::unique_ptr<T[]> new_data(new T[new_capacity]);
+    copy_(data_, new_data, size_);
+    std::swap(data_, new_data);
+    capacity_ = new_capacity;
+}
+
 template <typename T>
 void kns::vector<T>::copy_(std::unique_ptr<T[]> &src, std::unique_ptr<T[]> &dst, size_t src_size)
 {
