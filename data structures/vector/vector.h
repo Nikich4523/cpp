@@ -26,12 +26,13 @@ namespace kns
 
         // operations
         void push_back(T element);
-        void pop_back();
+        void pop_back() noexcept;
 
         size_t max_size() const noexcept;
         void clear() const noexcept;
         void reserve(size_t new_capacity);
         void reset();
+        void resize();
         void shrink_to_fit();
         void swap(); // friend
 
@@ -39,8 +40,8 @@ namespace kns
         size_t size() const noexcept;
         size_t capacity() const noexcept;
         bool empty() const noexcept;
-        T front() const;
-        T back() const;
+        T front() const noexcept;
+        T back() const noexcept;
 
         ~vector();
 
@@ -48,6 +49,10 @@ namespace kns
         T *data_;
         size_t size_;
         size_t capacity_;
+        float expansion_coefficient_ = 1.2;
+
+    private:
+        T *copy_(T *src, T *dst, size_t src_size);
     };
 }
 
@@ -94,17 +99,11 @@ void kns::vector<T>::push_back(T element)
 {
     if (size_ == capacity_)
     {
-        capacity_ += capacity_ * 1.2;
+        size_t new_capacity = capacity_ + capacity_ * expansion_coefficient_;
 
-        T *new_data = operator new[](sizeof(T));
-
-        for (auto i = 0; i < size_; ++i)
-        {
-            new_data[i] = data_[i];
-        }
-
-        delete[] data_;
-        data_ = new_data;
+        T *new_data = operator new[](sizeof(T) * new_capacity);
+        data_ = copy_(data_, new_data, size_);
+        capacity_ = new_capacity;
     }
 
     data_[size_] = element;
@@ -112,7 +111,7 @@ void kns::vector<T>::push_back(T element)
 }
 
 template <typename T>
-void kns::vector<T>::pop_back()
+void kns::vector<T>::pop_back() noexcept
 {
     --size_;
 }
@@ -138,14 +137,7 @@ void kns::vector<T>::reserve(size_t new_capacity)
         return;
 
     T *new_data = operator new[](sizeof(T) * new_capacity);
-
-    for (auto i = 0; i < size_; ++i)
-    {
-        new_data[i] = data_[i];
-    }
-
-    delete[] data_;
-    data_ = new_data;
+    data_ = copy_(data_, new_data, size_);
     capacity_ = new_capacity;
 }
 
@@ -169,17 +161,30 @@ bool kns::vector<T>::empty() const noexcept
 }
 
 template <typename T>
-T kns::vector<T>::front() const
+T kns::vector<T>::front() const noexcept
 {
     if (size > 0)
         return data_[0];
 }
 
 template <typename T>
-T kns::vector<T>::back() const
+T kns::vector<T>::back() const noexcept
 {
     if (size > 0)
         return data_[size_ - 1];
+}
+
+// PRIVATE /////
+template <typename T>
+T *kns::vector<T>::copy_(T *src, T *dst, size_t src_size)
+{
+    delete[] src;
+    for (auto i = 0; i < src_size; ++i)
+    {
+        dst[i] = src[i];
+    }
+
+    return dst;
 }
 
 #endif
