@@ -73,12 +73,18 @@ kns::vector<T>::~vector()
 template <typename T>
 T &kns::vector<T>::operator[](unsigned int ind)
 {
+    if (ind > size_)
+        throw(std::length_error("index was outside the bounds of vector"));
+
     return data_[ind];
 }
 
 template <typename T>
 const T &kns::vector<T>::operator[](unsigned int ind) const
 {
+    if (ind > size_)
+        throw(std::length_error("index was outside the bounds of vector"));
+
     return data_[ind];
 }
 
