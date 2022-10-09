@@ -10,8 +10,9 @@
 
 #include <cmath>
 #include <cstddef>
-#include <stdexcept>
+#include <initializer_list>
 #include <memory>
+#include <stdexcept>
 
 namespace kns
 {
@@ -24,6 +25,7 @@ namespace kns
         vector(size_t capacity);
         vector(vector<T> &other);
         vector(vector<T> &&other) noexcept;
+        vector(const std::initializer_list<T> list);
         ~vector();
 
         // operators
@@ -78,6 +80,18 @@ kns::vector<T>::vector(vector<T> &other) : data_(new T[other.size_]), size_(othe
 template <typename T>
 kns::vector<T>::vector(vector<T> &&other) noexcept
     : data_(std::move(other.data_)), size_(std::move(other.size_)), capacity_(std::move(other.capacity_)) {}
+
+template <typename T>
+kns::vector<T>::vector(const std::initializer_list<T> list)
+    : data_(new T[list.size()]), size_(list.size()), capacity_(size_)
+{
+    size_t i = 0;
+    for (auto element : list)
+    {
+        data_[i] = element;
+        ++i;
+    }
+}
 
 template <typename T>
 kns::vector<T>::~vector() {}
