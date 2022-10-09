@@ -1,8 +1,12 @@
 #ifndef KNS_VECTOR_H
 #define KNS_VECTOR_H
 
+// initializer_list
+// shrink_to_fit, можно ли переделать? не перевыделяя память
 // clear и pop_back - нужно ли вызвать деструкторы принудительно?
-// операторы присваивания (copy/move)
+// https://habr.com/ru/post/593803/#comment_23813311
+// https://habr.com/ru/post/593803/#comment_23795745
+// https://habr.com/ru/post/593803/#comment_23795623
 
 #include <cmath>
 #include <cstddef>
@@ -18,9 +22,14 @@ namespace kns
         // constructors & destructors
         vector();
         vector(size_t capacity);
+        vector(vector<T> &other);
+        vector(vector<T> &&other) noexcept;
         ~vector();
 
         // operators
+        vector<T> *operator=(vector<T> &other);
+        vector<T> *operator=(vector<T> &&other) noexcept;
+
         T &operator[](unsigned int ind);
         const T &operator[](unsigned int ind) const;
 
@@ -55,15 +64,43 @@ namespace kns
 
 // CONSTRUCTORS & DESTRUCTOR/////
 template <typename T>
-kns::vector<T>::vector() : vector(1) {}
+kns::vector<T>::vector() : vector(0) {}
 
 template <typename T>
 kns::vector<T>::vector(size_t capacity) : data_(new T[capacity]), size_(0), capacity_(capacity) {}
 
 template <typename T>
+kns::vector<T>::vector(vector<T> &other) : data_(new T[other.size_]), size_(other.size_), capacity_(other.capacity_)
+{
+    copy_(other.data_, data_, other.size_);
+}
+
+template <typename T>
+kns::vector<T>::vector(vector<T> &&other) noexcept
+    : data_(std::move(other.data_)), size_(std::move(other.size_)), capacity_(std::move(other.capacity_)) {}
+
+template <typename T>
 kns::vector<T>::~vector() {}
 
 // OPERATORS /////
+template <typename T>
+kns::vector<T> *kns::vector<T>::operator=(vector<T> &other)
+{
+    std::unique_ptr<T[]> temp(new T[other.size_]);
+    copy_(other.data_, temp, other.size_);
+    data_ = std::move(temp);
+    size_ = other.size_;
+    capacity_ = other.capacity_;
+}
+
+template <typename T>
+kns::vector<T> *kns::vector<T>::operator=(vector<T> &&other) noexcept
+{
+    data_ = std::move(other.data_);
+    size_ = std::move(other.size_);
+    capacity_ = std::move(other.capacity_);
+}
+
 template <typename T>
 T &kns::vector<T>::operator[](unsigned int ind)
 {
